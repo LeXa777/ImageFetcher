@@ -22,7 +22,7 @@ extension ImageFetcherController {
         
         cell.set(image: nil)
         
-        guard let url = URL(string: "\(address)/image/\(indexPath.row)") else { return cell }
+        guard let url = URL(string: getImageUrlFor(pos: indexPath.row)) else { return cell }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 print("Error fetching the image: ", error)
