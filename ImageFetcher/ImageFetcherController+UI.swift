@@ -10,6 +10,9 @@ import UIKit
 
 extension ImageFetcherController {
     internal func setupView() {
+        let navBarHeight = self.navigationController!.navigationBar.intrinsicContentSize.height + UIApplication.shared.statusBarFrame.height
+        screenDimensions = CGSize(width: view.bounds.width, height: view.bounds.height - navBarHeight)
+        
         guard let cw = collectionView else { return }
         
         cw.register(ImageFetcherCell.self, forCellWithReuseIdentifier: cellId)

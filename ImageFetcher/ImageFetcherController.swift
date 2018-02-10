@@ -22,10 +22,7 @@ class ImageFetcherController: UICollectionViewController {
     
     let cellId = "cellId"
     
-    lazy var screenDimensions: CGSize = {
-        let navBarHeight = self.navigationController!.navigationBar.intrinsicContentSize.height + UIApplication.shared.statusBarFrame.height
-        return CGSize(width: view.bounds.width, height: view.bounds.height - navBarHeight)
-    }()
+    var screenDimensions: CGSize?
     
     let activityIndicator: UIActivityIndicatorView = {
         let ai = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
@@ -39,8 +36,8 @@ class ImageFetcherController: UICollectionViewController {
         super.viewDidLoad()
         
         setupView()
-//        setupUsingLocalServer()
-        setupUsingPicsumServer()
+        setupUsingLocalServer()
+//        setupUsingPicsumServer()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,7 +64,7 @@ class ImageFetcherController: UICollectionViewController {
                 
                 // Skip first N pics
                 let start = 10
-                let count = responseJSON.count - start
+                let count = responseJSON.count
                 
                 var pos = 0
                 for i in start..<count {
@@ -76,13 +73,7 @@ class ImageFetcherController: UICollectionViewController {
                     pos += 1
                 }
                 
-//                responseJSON.forEach({ (line) in
-//                    guard let id = line["id"] as? Int else { return }
-//                    self.picsumPosToImageIdMapper[count] = id
-//                    count += 1
-//                })
-                
-                self.finshedFetchingImagesInfo(totalImages: count)
+                self.finshedFetchingImagesInfo(totalImages: count - start)
             }
         }.resume()
     }
@@ -129,7 +120,7 @@ class ImageFetcherController: UICollectionViewController {
         
         if isPicsum {
             let id = picsumPosToImageIdMapper[pos]!
-            return "\(address)/\(screenDimensions.width)/\(screenDimensions.height)/?image=\(id)"
+            return "\(address)/\(screenDimensions!.width)/\(screenDimensions!.height)/?image=\(id)"
         }
         
         return "\(address)/image/\(pos)"

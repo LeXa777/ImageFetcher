@@ -22,23 +22,19 @@ extension ImageFetcherController {
         
         cell.set(image: nil)
         
-        guard let url = URL(string: getImageUrlFor(pos: indexPath.row)) else { return cell }
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                print("Error fetching the image: ", error)
-                return
-            }
-            
-            guard let data = data, let image = UIImage(data: data) else { return }
-            
-            DispatchQueue.main.async {
-                cell.set(image: image)
-                
-                if let selectedPhoto = self.selectedPhoto, selectedPhoto.row == indexPath.row {
-                    selectedPhoto.imageView.set(image: image)
+        DispatchQueue.global().async {
+            guard let url = URL(string: self.getImageUrlFor(pos: indexPath.row)) else { return }
+            let data = try? Data(contentsOf: url)
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    cell.set(image: image)
+
+                    if let selectedPhoto = self.selectedPhoto, selectedPhoto.row == indexPath.row {
+                        selectedPhoto.imageView.set(image: image)
+                    }
                 }
             }
-        }.resume()
+        }
         
         return cell
     }
