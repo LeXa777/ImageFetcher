@@ -27,8 +27,8 @@ extension ImageFetcherController {
         if let data = data, let image = UIImage(data: data) {
             cell.set(image: image)
 
-            if let selectedPhoto = self.selectedPhoto, selectedPhoto.row == indexPath.row {
-                selectedPhoto.imageView.set(image: image)
+            if let selectedImage = self.selectedImage, selectedImage.row == indexPath.row {
+                selectedImage.imageView.set(image: image)
             }
         }
 
@@ -42,7 +42,7 @@ extension ImageFetcherController {
         
         imageFullScreenViewController.set(image: image)
         
-        selectedPhoto = (indexPath.row, imageFullScreenViewController)
+        selectedImage = (indexPath.row, imageFullScreenViewController)
         
         navigationController?.pushViewController(imageFullScreenViewController, animated: true)
     }

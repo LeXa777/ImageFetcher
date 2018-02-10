@@ -18,7 +18,7 @@ class ImageFetcherController: UICollectionViewController {
     var address = ""
     
     var totalImages = 0
-    var selectedPhoto: (row: Int, imageView: ImageFullScreenViewController)?
+    var selectedImage: (row: Int, imageView: ImageFullScreenViewController)?
     
     let cellId = "cellId"
     
@@ -42,7 +42,7 @@ class ImageFetcherController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        selectedPhoto = nil
+        selectedImage = nil
     }
     
     private func setupUsingPicsumServer() {        
