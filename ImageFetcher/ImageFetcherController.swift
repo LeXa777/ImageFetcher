@@ -36,8 +36,8 @@ class ImageFetcherController: UICollectionViewController {
         super.viewDidLoad()
         
         setupView()
-        setupUsingLocalServer()
-//        setupUsingPicsumServer()
+//        setupUsingLocalServer()
+        setupUsingPicsumServer()
     }
     
     override func viewWillAppear(_ animated: Bool) {

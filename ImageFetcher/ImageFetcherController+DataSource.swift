@@ -20,22 +20,18 @@ extension ImageFetcherController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ImageFetcherCell
         
-        cell.set(image: nil)
+        guard let url = URL(string: self.getImageUrlFor(pos: indexPath.row)) else { return cell }
         
-        DispatchQueue.global().async {
-            guard let url = URL(string: self.getImageUrlFor(pos: indexPath.row)) else { return }
-            let data = try? Data(contentsOf: url)
-            if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async {
-                    cell.set(image: image)
+        let data = try? Data(contentsOf: url)
+        
+        if let data = data, let image = UIImage(data: data) {
+            cell.set(image: image)
 
-                    if let selectedPhoto = self.selectedPhoto, selectedPhoto.row == indexPath.row {
-                        selectedPhoto.imageView.set(image: image)
-                    }
-                }
+            if let selectedPhoto = self.selectedPhoto, selectedPhoto.row == indexPath.row {
+                selectedPhoto.imageView.set(image: image)
             }
         }
-        
+
         return cell
     }
     
