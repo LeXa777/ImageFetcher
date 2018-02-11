@@ -17,29 +17,20 @@ extension ImageFetcherController {
         return totalImages
     }
     
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        imageTasks[indexPath.row]?.resume()
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        imageTasks[indexPath.row]?.pause()
+    }
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ImageFetcherCell
         
-        cell.set(image: nil)
-        
-        guard let url = URL(string: "\(address)/image/\(indexPath.row)") else { return cell }
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                print("Error fetching the image: ", error)
-                return
-            }
-            
-            guard let data = data, let image = UIImage(data: data) else { return }
-            
-            DispatchQueue.main.async {
-                cell.set(image: image)
-                
-                if let selectedPhoto = self.selectedPhoto, selectedPhoto.row == indexPath.row {
-                    selectedPhoto.imageView.set(image: image)
-                }
-            }
-        }.resume()
-        
+        let image = imageTasks[indexPath.row]?.image
+        cell.set(image: image)
+
         return cell
     }
     
@@ -50,7 +41,7 @@ extension ImageFetcherController {
         
         imageFullScreenViewController.set(image: image)
         
-        selectedPhoto = (indexPath.row, imageFullScreenViewController)
+        selectedImage = (indexPath.row, imageFullScreenViewController)
         
         navigationController?.pushViewController(imageFullScreenViewController, animated: true)
     }
