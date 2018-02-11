@@ -9,7 +9,9 @@
 import UIKit
 
 
-class ImageFetcherController: UICollectionViewController {
+class ImageFetcherController: UICollectionViewController, ImageTaskDownloadedDelegate {
+    var imageTasks = [Int: ImageTask]()
+    
     let localServerAddress = "http://192.168.0.40:3000"
     
     let picsumServerAddress = "https://picsum.photos"
@@ -45,6 +47,14 @@ class ImageFetcherController: UICollectionViewController {
         selectedImage = nil
     }
     
+    func imageDownloaded(position: Int) {
+        self.collectionView?.reloadItems(at: [IndexPath(row: position, section: 0)])
+        
+        if let selectedImage = self.selectedImage, selectedImage.row == position, let image = imageTasks[position]?.image {
+            selectedImage.imageView.set(image: image)
+        }
+    }
+    
     private func setupUsingPicsumServer() {        
         address = picsumServerAddress
         
@@ -73,7 +83,7 @@ class ImageFetcherController: UICollectionViewController {
                     pos += 1
                 }
                 
-                self.finshedFetchingImagesInfo(totalImages: count - start)
+                self.finishedFetchingImagesInfo(totalImages: count - start)
             }
         }.resume()
     }
@@ -94,16 +104,27 @@ class ImageFetcherController: UICollectionViewController {
             let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
             if let responseJSON = responseJSON as? [String: Any] {
                 guard let totalImages = responseJSON["totalImages"] as? Int else { return }
-                self.finshedFetchingImagesInfo(totalImages: totalImages)
+                self.finishedFetchingImagesInfo(totalImages: totalImages)
             }
         }.resume()
     }
     
-    private func finshedFetchingImagesInfo(totalImages: Int) {
+    private func finishedFetchingImagesInfo(totalImages: Int) {
         DispatchQueue.main.async {
+            self.setupImageTasks(totalImages: totalImages)
             self.totalImages = totalImages
             self.collectionView?.reloadData()
             self.activityIndicator.stopAnimating()
+        }
+    }
+    
+    private func setupImageTasks(totalImages: Int) {
+        let session = URLSession(configuration: URLSessionConfiguration.default)
+        
+        for i in 0..<totalImages {
+            let url = URL(string: getImageUrlFor(pos: i))!
+            let imageTask = ImageTask(position: i, url: url, session: session, delegate: self)
+            imageTasks[i] = imageTask
         }
     }
     
