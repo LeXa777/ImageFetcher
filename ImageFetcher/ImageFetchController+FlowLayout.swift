@@ -10,7 +10,7 @@ import UIKit
 
 extension ImageFetcherController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.frame.width / 3 - 40 / 3
+        let width = collectionView.frame.width / 3 - 50 / 3
         return CGSize(width: width, height: width)
     }
     
